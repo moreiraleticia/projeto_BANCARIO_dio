@@ -1,39 +1,49 @@
-def depositar(valor):
-    global saldo, extrato
-    if valor > 0:
-        saldo += valor
-        extrato += f"Depósito: R$ {valor:.2f}\n"
-        print("Depósito realizado com sucesso!")
-    else:
-        print("Valor inválido para depósito.")
+class ContaBancaria:
+    def __init__(self):
+        self.saldo = 0
+        self.extrato = []
+        self.numero_saques = 0
+        self.data_ultimo_saque = None 
 
-def sacar(valor):
-    global saldo, extrato, numero_saques
-    if numero_saques >= 3:
-        print("Você atingiu o limite máximo de saques diários.")
-    elif valor > saldo:
-        print("Saldo insuficiente.")
-    elif valor > 500:
-        print("Valor do saque excede o limite diário.")
-    else:
-        saldo -= valor
-        extrato += f"Saque: R$ {valor:.2f}\n"
-        numero_saques += 1
-        print("Saque realizado com sucesso!")
+    def depositar(self, valor):
+        if valor > 0:
+            self.saldo += valor
+            self.extrato.append(f"Depósito: R$ {valor:.2f}")
+            return True
+        else:
+            return False
 
-def visualizar_extrato():
-    global extrato, saldo
-    print("=== Extrato ===")
-    if not extrato:
-        print("Não foram realizadas movimentações.")
-    else:
-        print(extrato)
-    print(f"Saldo atual: R$ {saldo:.2f}")
+    def sacar(self, valor):
+        if valor <= 0:
+            print("Valor de saque inválido.")
+        elif self.numero_saques >= 3:
+            print("Você atingiu o limite máximo de saques diários.")
+        elif valor > self.saldo:
+            print("Saldo insuficiente.")
+        elif valor > 500:
+            print("Valor do saque excede o limite diário.")
+        else:
+            self.saldo -= valor
+            self.extrato.append(f"Saque: R$ {valor:.2f}")
+            self.numero_saques += 1
+            print("Saque realizado com sucesso!")
 
+    def visualizar_extrato(self):
+        print("=== Extrato ===")
+        for transacao in self.extrato:
+            print(transacao)
+        print(f"Saldo atual: R$ {self.saldo:.2f}")
+
+
+conta = ContaBancaria()
 
 saldo = 0
+
 extrato = ""
+
 numero_saques = 0
+
+
 
 while True:
     print("=== Menu ===")
@@ -45,13 +55,25 @@ while True:
     opcao = input("Digite a opção desejada: ")
 
     if opcao == '1':
-        valor = float(input("Digite o valor a ser depositado: "))
-        depositar(valor)
+        try:
+            valor = float(input("Digite o valor a ser depositado: "))
+            if conta.depositar(valor):
+                print("Depósito realizado com sucesso!")
+            else:
+                print("Valor inválido para depósito.")
+        except ValueError:
+            print("Valor inválido. Digite um número.")
     elif opcao == '2':
-        valor = float(input("Digite o valor a ser sacado: "))
-        sacar(valor)
+        try:
+            valor = float(input("Digite o valor a ser sacado: "))
+            if conta.sacar(valor):
+                print("Saque realizado com sucesso!")
+            else:
+                print("Saque não realizado. Verifique as condições.")
+        except ValueError:
+            print("Valor inválido. Digite um número.")
     elif opcao == '3':
-        visualizar_extrato()
+        conta.visualizar_extrato()
     elif opcao == '4':
         break
     else:
